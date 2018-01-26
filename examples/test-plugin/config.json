@@ -1,0 +1,10 @@
+{
+    "info": {
+        "name": "InjectorKit Test Plugin",
+        "authors": [
+            "Samuel Elliott"
+        ],
+        "version": 1
+    },
+    "main": "main.js"
+}

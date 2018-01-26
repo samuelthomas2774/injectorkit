@@ -1,0 +1,10 @@
+{
+    "name": "injectorkit",
+    "author": "Samuel Elliott",
+    "version": "1.0.0",
+    "license": "MIT",
+    "main": "src/main.js",
+    "devDependencies": {
+        "jquery": "^3.0.0"
+    }
+}
