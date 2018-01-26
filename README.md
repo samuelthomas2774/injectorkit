@@ -9,7 +9,7 @@ Usage
 The main function you'll use is the `InjectorKit.get` function. It returns an `Element` object, which contains functions to add content before, after or inside that element.
 
 ```js
-const InjectorKit = require('discord-injectorkit');
+const InjectorKit = require('injectorkit');
 const injectorkit = new InjectorKit();
 
 injectorkit.start();
@@ -67,7 +67,7 @@ Available elements
 
 Not that much *yet*.
 
--               | CSS Selector              | Notes
+Name            | CSS Selector              | Notes
 ----------------|---------------------------|---
 app             | #app-mount                | The root element Discord is mounted at
 server-list     | .guilds-wrapper           |
@@ -79,7 +79,7 @@ message         | .message-group            | A message (this includes messages 
 member-list     | .channel-members-wrap     |
 member-list-member | .channel-members-wrap .member |
 preferences     | .layer-kosS71             | The user/app settings layer
-preferences_sidebar | .layer-kosS71 .side-2nYO0F |
+preferences-sidebar | .layer-kosS71 .side-2nYO0F |
 modal           | .modal-2LIEKY             |
 modal-help      | .modal-2LIEKY .need-help-modal |
 tooltips        | .tooltips                 |
