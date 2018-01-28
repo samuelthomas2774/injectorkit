@@ -105,22 +105,33 @@ class Element {
         });
     }
 
-    remove(injection_id) {
+    once(inject_callback, uninject_callback) {
+        return this.add({
+            type: 'once',
+            to_inject: null,
+            inject_callback,
+            uninject_callback
+        });
+    }
+
+    remove(injection_id, dont_uninject) {
         this.injections = this.injections.filter(injection => {
             if (injection_id && injection.id !== injection_id)
                 return true;
 
-            this.uninject(injection);
+            if (!dont_uninject)
+                this.uninject(injection);
             return false;
         });
     }
 
-    removeByInjectedElement(to_uninject) {
+    removeByInjectedElement(to_uninject, dont_uninject) {
         this.injections = this.injections.filter(injection => {
             if (!injection.to_inject || injection.to_inject !== to_uninject)
                 return true;
 
-            this.uninject(injection);
+            if (!dont_uninject)
+                this.uninject(injection);
             return false;
         });
     }
@@ -169,6 +180,10 @@ class Element {
 
     inject_at_append(injection, $element, $to_inject) {
         return $to_inject.appendTo($element);
+    }
+
+    inject_at_once(injection, $element, $to_inject) {
+        this.remove(injection.id, true);
     }
 
     uninject(injection) {
