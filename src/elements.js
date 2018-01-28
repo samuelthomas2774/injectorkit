@@ -25,7 +25,7 @@ class ElementRecord {
 class Elements {
 
     get(element_name) {
-        element_name = element_name.replace('-', '_');
+        element_name = element_name.replace(/-/g, '_');
         return new ElementRecord(this[element_name]);
     }
 
@@ -61,6 +61,10 @@ class Elements {
 
     get modal() { return '.modal-2LIEKY'; }
     get modal_help() { return '.modal-2LIEKY .need-help-modal'; }
+    get modal_addserver() { return '.modal-2LIEKY .create-guild-container'; }
+    get modal_addserver_createjoin() { return '.modal-2LIEKY .create-guild-container > .create-or-join'; }
+    get modal_addserver_create() { return '.modal-2LIEKY .create-guild-container > .create-guild'; }
+    get modal_addserver_join() { return '.modal-2LIEKY .create-guild-container > .join-server'; }
 
     get tooltips() { return '.tooltips'; }
     get tooltip() { return '.tooltips > *'; }

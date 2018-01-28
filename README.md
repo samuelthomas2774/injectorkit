@@ -82,6 +82,10 @@ preferences     | .layer-kosS71             | The user/app settings layer
 preferences-sidebar | .layer-kosS71 .side-2nYO0F |
 modal           | .modal-2LIEKY             |
 modal-help      | .modal-2LIEKY .need-help-modal |
+modal-addserver | .modal-2LIEKY .create-guild-container |
+modal-addserver-createjoin | .modal-2LIEKY .create-guild-container > .create-or-join |
+modal-addserver-create | .modal-2LIEKY .create-guild-container > .create-guild |
+modal-addserver-join | .modal-2LIEKY .create-guild-container > .join-server |
 tooltips        | .tooltips                 |
 tooltip         | .tooltips > *             |
 

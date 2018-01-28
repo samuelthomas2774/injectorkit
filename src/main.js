@@ -58,7 +58,7 @@ class InjectorKit {
     }
 
     get(element_name) {
-        if (!elements[element_name.replace('-', '_')])
+        if (!elements[element_name.replace(/-/g, '_')])
             throw { message: `Unknown element ${element_name}.` };
 
         if(this.element_instances[element_name])

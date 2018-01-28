@@ -28,7 +28,7 @@ class TestPlugin2 {
 
     loadInjections() {
         this.$menu = $('<div></div>').addClass('injectorkit-test injectorkit-test-menu').text('It works!');
-        this.menu_injection = this.injectorkit.get('search_bar').after(this.$menu);
+        this.menu_injection = this.injectorkit.get('search-bar').after(this.$menu);
 
         this.$styles = $('<style></style>').text('.injectorkit-test-menu {\
             font-size: 15px;\
