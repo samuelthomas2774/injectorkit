@@ -87,7 +87,7 @@ class InjectorKit {
         if (started) return;
         started = true;
 
-        observer.observe(elements.get('app').firstNode, {
+        observer.observe(document.documentElement, {
             childList: true,
             subtree: true
         });
