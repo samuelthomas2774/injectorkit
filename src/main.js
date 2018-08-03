@@ -27,7 +27,7 @@ class InjectorKit {
         this.id = id || 0;
         while (instances[this.id]) {
             this.id = Math.random();
-        };
+        }
 
         instances[this.id] = this;
 
@@ -61,7 +61,7 @@ class InjectorKit {
         if (!elements[element_name.replace(/-/g, '_')])
             throw { message: `Unknown element ${element_name}.` };
 
-        if(this.element_instances[element_name])
+        if (this.element_instances[element_name])
             return this.element_instances[element_name];
 
         let element = this.element_instances[element_name] = new Element(this, element_name, elements.get(element_name));
@@ -80,9 +80,9 @@ class InjectorKit {
 
         $.each(this.element_instances, (name, element) => {
             element.unload();
-            this.element_instances[name] = null;
-            InjectorKit.instances[this.id] = null;
+            delete this.element_instances[name];
         });
+        delete InjectorKit.instances[this.id];
     }
 
     static start() {
@@ -101,10 +101,20 @@ class InjectorKit {
         });
     }
 
+    static destroy() {
+        for (let instance of instances) {
+            instance.unload();
+        }
+
+        observer.disconnect();
+    }
+
     static mutationcallback(mutations) {
-        $.each(mutations, (key, mutation) => {
-            $.each(mutation.addedNodes, (key, node) => InjectorKit.addedNode(node, mutation));
-        });
+        for (let mutation of mutations) {
+            for (let node of mutation.addedNodes) {
+                InjectorKit.addedNode(node, mutation);
+            }
+        }
     }
 
     static addedNode(node, mutation) {

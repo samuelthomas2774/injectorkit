@@ -39,7 +39,7 @@ class Elements {
 
     get user_details() { return '.container-iksrDt'; }
 
-    get search_bar() { return '.search-2--6aU'; }
+    get search_bar() { return '.da-search'; }
 
     get channel_list_channel() {
         var selector = '';
