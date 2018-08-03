@@ -1,12 +1,15 @@
 module.exports = (Plugin, Api, Vendor) => {
     const InjectorKit = require('../../');
+    const ElementStore = require('../../elements/discord');
 
     const { CssUtils } = Api;
 
     // const { $, moment } = Vendor;
     // const { Events } = Api;
 
-    const injectorkit = new InjectorKit('testplugin');
+    const DiscordInjectorKit = InjectorKit.use(ElementStore);
+
+    const injectorkit = new DiscordInjectorKit('testplugin');
 
     const menu = document.createElement('div');
     menu.classList.add('injectorkit-test', 'injectorkit-test-menu');
