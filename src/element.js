@@ -106,6 +106,14 @@ class Element {
     }
 
     once(inject_callback, uninject_callback, ignore_current_elements) {
+		if (!inject_callback) {
+			return new Promise((resolve, reject) => {
+				this.once((injection, $element) => {
+					resolve($element);
+				}, null, typeof ignore_current_elements === 'boolean' ? ignore_current_elements : true);
+			});
+		}
+
         return this.add({
             type: 'once',
             to_inject: null,
