@@ -4,6 +4,9 @@
 
 const $ = require('jquery');
 
+const InjectorKit = require('./main');
+const Injection = require('./injection');
+
 class Element {
 
     constructor(injectorkit, element_name, element) {
@@ -21,43 +24,34 @@ class Element {
     start() {
         this.started = true;
         InjectorKit.watched_elements[this.element_name].push(this);
-        $.each(this.injections, (key, injection) => {
+
+        for (let injection of this.injections) {
             if (injection.started) return;
             this.inject(injection);
-        });
+        }
     }
 
     stop() {
         this.started = false;
         InjectorKit.watched_elements[this.element_name] = InjectorKit.watched_elements[this.element_name].filter((index, element) => element === this);
-        $.each(this.injections, (key, injection) => {
+
+        for (let injection of this.injections) {
             if (!injection.started) return;
             this.uninject(injection);
-        });
+        }
     }
 
     refresh() {
         if (!this.started) return;
 
-        $.each(this.injections, (key, injection) => {
+        for (let injection of this.injections) {
             this.uninject(injection);
             this.inject(injection);
-        });
+        }
     }
 
     add(injection) {
-        do {
-            injection.id = Math.random();
-        } while (this.injections.find(i => i.id === injection.id));
-
-        injection.$injected = $();
-
-        this.injections.push(injection);
-
-        if (this.started && !injection.ignore_current_elements)
-            this.inject(injection);
-
-        return injection;
+        return new Injection(this, injection);
     }
 
     before(to_inject, inject_callback, uninject_callback) {
@@ -146,32 +140,7 @@ class Element {
     }
 
     inject(injection) {
-        const that = this;
-        const type = injection.type;
-        const $to_inject = $(injection.to_inject).data('injectorkit-injection', injection.id);
-
-        console.log('Injecting', injection.to_inject, type, this.jQuery);
-
-        const $elements = this.jQuery;
-        const $uninjected_elements = $elements.filter(function() { return !$(this).data('injectorkit-started-' + injection.id); });
-
-        $uninjected_elements.each(function() {
-            let $element = $(this);
-            let $injected = null;
-
-            if (that['inject_at_' + type])
-                $injected = that['inject_at_' + type](injection, $element, $to_inject);
-
-            if (injection.inject_callback)
-                injection.inject_callback(injection, $element, $injected);
-
-            $element.data('injectorkit-injected-' + injection.id, $injected);
-            injection.$injected = injection.$injected.add($injected);
-
-            $element.data('injectorkit-started-' + injection.id, true);
-        });
-
-        injection.started = true;
+        return injection.inject();
     }
 
     inject_at_before(injection, $element, $to_inject) {
@@ -196,29 +165,7 @@ class Element {
     }
 
     uninject(injection) {
-        const that = this;
-        const type = injection.type;
-        const $to_inject = $(injection.to_inject);
-
-        console.log('Uninjecting ', injection.to_inject, ' ', type, ' ', this.jQuery);
-
-        const $elements = this.jQuery;
-        const $injected_elements = $elements.filter(function() { return $(this).data('injectorkit-started-' + injection.id); });
-
-        $injected_elements.each(function() {
-            let $element = $(this);
-            let $injected = $element.data('injectorkit-injected-' + injection.id);
-
-            if (injection.uninject_callback)
-                injection.uninject_callback(injection, $element, $injected);
-
-            if (that['uninject_at_' + type])
-                that['uninject_at_' + type](injection, $element, $to_inject, $injected);
-
-            $element.data('injectorkit-started-' + injection.id, false);
-        });
-
-        injection.started = false;
+        return injection.uninject();
     }
 
     uninject_at_before(injection, $element, $to_inject, $to_uninject) {

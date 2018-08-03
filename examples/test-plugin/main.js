@@ -49,6 +49,7 @@ module.exports = (Plugin, Api, Vendor) => {
 
             delete require.cache[require.resolve('../../src/main')];
             delete require.cache[require.resolve('../../src/element')];
+            delete require.cache[require.resolve('../../src/injection')];
             delete require.cache[require.resolve('../../src/elements')];
         }
 

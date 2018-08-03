@@ -13,11 +13,15 @@ class ElementRecord {
     }
 
     get jQuery() {
-        return $(this.selector);
+        return $(this.nodes);
     }
 
     get firstNode() {
-        return this.jQuery[0];
+        return document.querySelector(this.selector);
+    }
+
+    get nodes() {
+        return document.querySelectorAll(this.selector);
     }
 
 }
