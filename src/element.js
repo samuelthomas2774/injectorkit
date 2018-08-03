@@ -54,7 +54,7 @@ class Element {
 
         this.injections.push(injection);
 
-        if (this.started)
+        if (this.started && !injection.ignore_current_elements)
             this.inject(injection);
 
         return injection;
@@ -105,12 +105,13 @@ class Element {
         });
     }
 
-    once(inject_callback, uninject_callback) {
+    once(inject_callback, uninject_callback, ignore_current_elements) {
         return this.add({
             type: 'once',
             to_inject: null,
             inject_callback,
-            uninject_callback
+            uninject_callback,
+			ignore_current_elements
         });
     }
 
@@ -213,7 +214,6 @@ class Element {
     }
 
     uninject_at_before(injection, $element, $to_inject, $to_uninject) {
-        // $element.prevAll().filter(function() { return $(this).data('injectorkit-injection') === injection.id; }).detach();
         $to_uninject.detach();
     }
 
@@ -231,7 +231,6 @@ class Element {
 
     unload() {
         this.stop();
-
     }
 
     get jQuery() {
