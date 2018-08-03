@@ -5,8 +5,6 @@
 const Element = require('./element');
 const elements = require('./elements');
 
-const $ = require('jquery');
-
 const instances = {};
 const watched_elements = {};
 
@@ -39,22 +37,22 @@ class InjectorKit {
 
     start() {
         this.started = true;
-        $.each(this.element_instances, (key, element) => {
+        for (let element of this.element_instances) {
             element.start();
-        });
+        }
     }
 
     stop() {
         this.started = false;
-        $.each(this.element_instances, (key, element) => {
+        for (let element of this.element_instances) {
             element.stop();
-        });
+        }
     }
 
     refresh() {
-        $.each(this.element_instances, (key, element) => {
+        for (let element of this.element_instances) {
             element.refresh();
-        });
+        }
     }
 
     get(element_name) {
@@ -78,10 +76,10 @@ class InjectorKit {
         // This shouldn't be used to stop a plugin
         // See InjectorKit.stop for that
 
-        $.each(this.element_instances, (name, element) => {
+        for (let element of this.element_instances) {
             element.unload();
             delete this.element_instances[name];
-        });
+        }
         delete InjectorKit.instances[this.id];
     }
 
@@ -96,9 +94,9 @@ class InjectorKit {
     }
 
     static refresh() {
-        $.each(instances, (id, instance) => {
+        for (let instance of instances) {
             instance.refresh();
-        });
+        }
     }
 
     static destroy() {
@@ -121,7 +119,7 @@ class InjectorKit {
         if (node.nodeType !== 1)
             return;
 
-        $.each(watched_elements, (element_name, elements_watching) => {
+        for (let [element_name, elements_watching] of Object.entries(watched_elements)) {
             if (elements_watching.length <= 0) return;
 
             var selector = elements.get(element_name).selector;
@@ -131,19 +129,21 @@ class InjectorKit {
             // added_nodes.push(node);
 
             if (node.matches(selector)) {
-                console.log(node, ' matches selector ', selector);
-                $.each(elements_watching, (key, element) => {
+                console.log(node, 'matches selector', selector);
+
+                for (let element of elements_watching) {
                     console.log('exact', node, element, mutation);
                     element.refresh();
-                });
+                }
             } else if ((matched_elements = node.querySelectorAll(selector)).length > 0) {
-                console.log('child', matched_elements, ' matches selector ', selector);
-                $.each(elements_watching, (key, element) => {
+                console.log('child', matched_elements, 'matches selector', selector);
+
+                for (let element of elements_watching) {
                     console.log('child', node, element, mutation);
                     element.refresh();
-                });
+                }
             }
-        });
+        }
     }
 
     static get instances() { return instances; }
