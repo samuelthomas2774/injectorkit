@@ -8,7 +8,8 @@ const $ = require('jquery');
 
 class ElementRecord {
 
-    constructor(selector) {
+    constructor(name, selector) {
+        this.name = name;
         this.selector = selector;
     }
 
@@ -26,13 +27,33 @@ class ElementRecord {
 
 }
 
-class Elements {
+class ElementStore {
 
     get(element_name) {
         element_name = element_name.replace(/-/g, '_');
-        return new ElementRecord(this[element_name]);
+
+        const element_selector = this[element_name];
+
+        if (!element_selector) throw new Error(`Unknown element ${element_name}`);
+        if (element_selector instanceof ElementRecord) return element_selector;
+
+        const element = new ElementRecord(element_name, element_selector);
+
+        Object.defineProperty(this, element_name, {
+            value: element,
+            configurable: true
+        });
+
+        return element;
     }
+
+    has(element_name) {
+        element_name = element_name.replace(/-/g, '_');
+        return !!this[element_name];
+    }
+
+    static get ElementRecord() { return ElementRecord; }
 
 }
 
-module.exports = new Elements();
+module.exports = ElementStore;

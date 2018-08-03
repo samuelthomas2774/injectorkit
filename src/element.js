@@ -7,12 +7,14 @@ const $ = require('jquery');
 const InjectorKit = require('./main');
 const Injection = require('./injection');
 
+const watched_elements = new Map();
+
 class Element {
 
-    constructor(injectorkit, element_name, element) {
+    constructor(injectorkit, element) {
         this.injectorkit = injectorkit;
         this.element = element;
-        this.element_name = element_name;
+        this.element_name = element.element_name;
 
         this.started = false;
         this.injections = [];
@@ -190,6 +192,14 @@ class Element {
 
     get jQuery() {
         return this.element.jQuery;
+    }
+
+    get nodes() {
+        return this.element.nodes;
+    }
+
+    static get watched_elements() {
+        return watched_elements;
     }
 
 }

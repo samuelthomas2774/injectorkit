@@ -3,10 +3,12 @@
  */
 
 const Element = require('./element');
-const elements = require('./elements');
+const ElementStore = require('./elements');
+
+const ElementRecord = ElementStore.ElementRecord;
 
 const instances = {};
-const watched_elements = {};
+const watched_elements = Element.watched_elements;
 
 const observer = new MutationObserver(mutations => InjectorKit.mutationcallback(mutations));
 
@@ -35,6 +37,15 @@ class InjectorKit {
         InjectorKit.start();
     }
 
+    static use(...element_stores) {
+        const ParentInjectorKit = this;
+
+        return class extends ParentInjectorKit {
+            static get parent() { return ParentInjectorKit; }
+            static get element_stores() { return element_stores; }
+        }
+    }
+
     start() {
         this.started = true;
         for (let element of this.element_instances) {
@@ -56,16 +67,15 @@ class InjectorKit {
     }
 
     get(element_name) {
-        if (!elements[element_name.replace(/-/g, '_')])
-            throw { message: `Unknown element ${element_name}.` };
+        const element_record = element_name instanceof ElementRecord ? element_name : this.constructor.getElementRecord(element_name);
 
-        if (this.element_instances[element_name])
-            return this.element_instances[element_name];
+        if (this.element_instances.has(element_record))
+            return this.element_instances.get(element_record);
 
-        let element = this.element_instances[element_name] = new Element(this, element_name, elements.get(element_name));
+        const element = new Element(this, element_record);
+        this.element_instances.set(element_record, element);
 
-        if (this.started)
-            element.start();
+        if (this.started) element.start();
 
         return element;
     }
@@ -144,6 +154,19 @@ class InjectorKit {
                 }
             }
         }
+    }
+
+    static getElementRecord(element_name) {
+        element_name = element_name.replace(/-/g, '_');
+
+        for (let element_store of this.element_stores) {
+            if (element_store.has(element_name)) return element_store.get(element_name);
+        }
+
+        if (this.parent) return this.parent.getElementRecord(element_name);
+
+        // If we get here then the element doesn't exist
+        throw new Error(`Unknown element ${element_name}`);
     }
 
     static get instances() { return instances; }
