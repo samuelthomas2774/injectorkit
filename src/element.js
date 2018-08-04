@@ -2,8 +2,6 @@
  * InjectorKit for Discord
  */
 
-const $ = require('jquery');
-
 const Injection = require('./injection');
 
 const watched_elements = new Map();
@@ -109,8 +107,8 @@ class Element {
     once(inject_callback, uninject_callback, ignore_current_elements) {
 		if (!inject_callback) {
 			return new Promise((resolve, reject) => {
-				this.once((injection, $element) => {
-					resolve($element);
+				this.once((injection, element) => {
+					resolve(element);
 				}, null, typeof ignore_current_elements === 'boolean' ? ignore_current_elements : true);
 			});
 		}
@@ -193,10 +191,6 @@ class Element {
 
     unload() {
         this.stop();
-    }
-
-    get jQuery() {
-        return this.element.jQuery;
     }
 
     get nodes() {

@@ -4,17 +4,11 @@
  * This file contains a list of elements in Discord's UI.
  */
 
-const $ = require('jquery');
-
 class ElementRecord {
 
     constructor(name, selector) {
         this.name = name;
         this.selector = selector;
-    }
-
-    get jQuery() {
-        return $(this.nodes);
     }
 
     get firstNode() {
