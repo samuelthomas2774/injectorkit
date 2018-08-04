@@ -31,7 +31,7 @@ class InjectorKit {
 
         instances[this.id] = this;
 
-        this.element_instances = {};
+        this.element_instances = new Map();
 
         // Make sure InjectorKit has started - otherwise it won't be listening for mutations
         InjectorKit.start();
@@ -48,20 +48,20 @@ class InjectorKit {
 
     start() {
         this.started = true;
-        for (let element of this.element_instances) {
+        for (let [element_record, element] of this.element_instances) {
             element.start();
         }
     }
 
     stop() {
         this.started = false;
-        for (let element of this.element_instances) {
+        for (let [name, element] of this.element_instances) {
             element.stop();
         }
     }
 
     refresh() {
-        for (let element of this.element_instances) {
+        for (let [name, element] of this.element_instances) {
             element.refresh();
         }
     }
@@ -86,14 +86,18 @@ class InjectorKit {
         // This shouldn't be used to stop a plugin
         // See InjectorKit.stop for that
 
-        for (let element of this.element_instances) {
+        for (let [name, element] of this.element_instances) {
             element.unload();
             delete this.element_instances[name];
+            this.element_instances.delete(this.element_instances);
         }
-        delete InjectorKit.instances[this.id];
+
+        delete instances[this.id];
     }
 
     static start() {
+        if (this !== InjectorKit) return InjectorKit.start();
+
         if (started) return;
         started = true;
 
@@ -110,7 +114,11 @@ class InjectorKit {
     }
 
     static destroy() {
-        for (let instance of instances) {
+        if (this !== InjectorKit) return InjectorKit.destroy();
+
+        started = false;
+
+        for (let instance of Object.values(instances)) {
             instance.unload();
         }
 
@@ -126,34 +134,47 @@ class InjectorKit {
     }
 
     static addedNode(node, mutation) {
+        const matches = this.getMatchingElements(node, mutation);
+        for (let {element, node} of matches) {
+            element.addedNode(node);
+        }
+    }
+
+    static getMatchingElements(node, mutation) {
+        const matches = [];
+
         if (node.nodeType !== 1)
-            return;
+            return matches;
 
-        for (let [element_name, elements_watching] of Object.entries(watched_elements)) {
-            if (elements_watching.length <= 0) return;
+        for (let [element_record, elements] of watched_elements) {
+            if (elements.length <= 0) return matches;
 
-            var selector = elements.get(element_name).selector;
-            let matched_elements;
+            if (node.matches(element_record.selector)) {
+                console.log(node, 'matches selector', element_record.selector);
 
-            // if ($.inArray(node, added_nodes) > -1) return;
-            // added_nodes.push(node);
-
-            if (node.matches(selector)) {
-                console.log(node, 'matches selector', selector);
-
-                for (let element of elements_watching) {
+                for (let element of elements) {
                     console.log('exact', node, element, mutation);
-                    element.refresh();
+                    matches.push({
+                        exact: true,
+                        element,
+                        node
+                    });
                 }
-            } else if ((matched_elements = node.querySelectorAll(selector)).length > 0) {
-                console.log('child', matched_elements, 'matches selector', selector);
+            } else for (let matched_node of node.querySelectorAll(element_record.selector)) {
+                console.log('child', matched_node, 'matches selector', element_record.selector);
 
-                for (let element of elements_watching) {
+                for (let element of elements) {
                     console.log('child', node, element, mutation);
-                    element.refresh();
+                    matches.push({
+                        exact: false,
+                        element,
+                        node: matched_node
+                    });
                 }
             }
         }
+
+        return matches;
     }
 
     static getElementRecord(element_name) {
@@ -169,13 +190,11 @@ class InjectorKit {
         throw new Error(`Unknown element ${element_name}`);
     }
 
-    static get instances() { return instances; }
-    static get watched_elements() { return watched_elements; }
-
-    static get elements() { return elements; }
-    // static get c() { return added_nodes; }
-
 }
+
+InjectorKit.instances = instances;
+InjectorKit.watched_elements = watched_elements;
+InjectorKit.ElementStore = ElementStore;
 
 module.exports = InjectorKit;
 window.InjectorKit = InjectorKit;

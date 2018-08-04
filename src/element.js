@@ -4,7 +4,6 @@
 
 const $ = require('jquery');
 
-const InjectorKit = require('./main');
 const Injection = require('./injection');
 
 const watched_elements = new Map();
@@ -18,14 +17,15 @@ class Element {
 
         this.started = false;
         this.injections = [];
-
-        InjectorKit.watched_elements[this.element_name] =
-        InjectorKit.watched_elements[this.element_name] || [];
     }
 
     start() {
         this.started = true;
-        InjectorKit.watched_elements[this.element_name].push(this);
+
+        if (!watched_elements.has(this.element))
+            watched_elements.set(this.element, new Set());
+
+        watched_elements.get(this.element).add(this);
 
         for (let injection of this.injections) {
             if (injection.started) return;
@@ -35,7 +35,12 @@ class Element {
 
     stop() {
         this.started = false;
-        InjectorKit.watched_elements[this.element_name] = InjectorKit.watched_elements[this.element_name].filter((index, element) => element === this);
+
+        const elements = watched_elements.get(this.element);
+        elements.delete(this);
+
+        if (!elements.size)
+            elements.delete(this.element);
 
         for (let injection of this.injections) {
             if (!injection.started) return;
@@ -198,10 +203,8 @@ class Element {
         return this.element.nodes;
     }
 
-    static get watched_elements() {
-        return watched_elements;
-    }
-
 }
+
+Element.watched_elements = watched_elements;
 
 module.exports = Element;

@@ -52,8 +52,8 @@ class ElementStore {
         return !!this[element_name];
     }
 
-    static get ElementRecord() { return ElementRecord; }
-
 }
+
+ElementStore.ElementRecord = ElementRecord;
 
 module.exports = ElementStore;
