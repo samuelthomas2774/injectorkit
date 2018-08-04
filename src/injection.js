@@ -75,69 +75,32 @@ class Injection {
     }
 
     inject_at(node) {
-        return Injection.inject_at(this.type, this, node, this.to_inject);
+        return this.constructor.inject_at(this, node, this.to_inject);
     }
 
-    static inject_at(type, injection, node, to_inject) {
-        if (!this['inject_at_' + type]) return;
-        return this['inject_at_' + type](injection, node, to_inject);
-    }
-
-    static inject_at_before(injection, element, to_inject) {
-        console.log(to_inject, 'before', element);
-
-        to_inject = to_inject.cloneNode(true);
-        element.parentNode.insertBefore(to_inject, element);
-        return to_inject;
-    }
-
-    static inject_at_after(injection, element, to_inject) {
-        // return $to_inject.insertAfter($element);
-
-        console.log(to_inject, 'after', element);
-
-        to_inject = to_inject.cloneNode(true);
-        element.parentNode.insertBefore(to_inject, element.nextSibling);
-        return to_inject;
-    }
-
-    static inject_at_prepend(injection, $element, $to_inject) {
-        return $to_inject.prependTo($element);
-    }
-
-    static inject_at_append(injection, $element, $to_inject) {
-        return $to_inject.appendTo($element);
-    }
-
-    static inject_at_once(injection, $element, $to_inject) {
-        this.remove(injection.id, true);
+    static inject_at(injection, node, to_inject) {
+        if (!this['inject_at_' + injection.type]) return;
+        return this['inject_at_' + injection.type](injection, node, to_inject);
     }
 
     uninject_at(node, injected) {
-        return Injection.uninject_at(this.type, this, node, this.to_inject, injected);
+        return this.constructor.uninject_at(this, node, this.to_inject, injected);
     }
 
-    static uninject_at(type, injection, node, to_inject, injected) {
-        if (!this['uninject_at_' + type]) return;
-        return this['uninject_at_' + type](injection, node, to_inject, injected);
-    }
-
-    static uninject_at_before(injection, element, to_inject, injected) {
-        injected.parentNode.removeChild(injected);
-    }
-
-    static uninject_at_after(injection, element, to_inject, injected) {
-        injected.parentNode.removeChild(injected);
-    }
-
-    static uninject_at_prepend(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
-    }
-
-    static uninject_at_append(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
+    static createInjection(element, injection, type) {
+        const InjectionType = Injection.types[type || injection.type];
+        if (!InjectionType) throw new Error(`Unknown injection type ${type || injection.type}`);
+        return new InjectionType(element, injection);
     }
 
 }
+
+Injection.types = new class {
+    get before() { return require('./injection-types/before'); }
+    get after() { return require('./injection-types/after'); }
+    get prepend() { return require('./injection-types/prepend'); }
+    get append() { return require('./injection-types/append'); }
+    get once() { return require('./injection-types/once'); }
+};
 
 module.exports = Injection;

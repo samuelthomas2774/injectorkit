@@ -56,7 +56,7 @@ class Element {
     }
 
     add(injection) {
-        return new Injection(this, injection);
+        return Injection.createInjection(this, injection, injection.type);
     }
 
     before(to_inject, inject_callback, uninject_callback) {
@@ -123,25 +123,12 @@ class Element {
     }
 
     remove(injection_id, dont_uninject) {
-        this.injections = this.injections.filter(injection => {
-            if (injection_id && injection.id !== injection_id)
-                return true;
+        let index;
+        while ((index = this.injections.findIndex(injection => injection.id === injection_id || injection === injection_id)) > -1) {
+            if (!dont_uninject) this.uninject(injection);
 
-            if (!dont_uninject)
-                this.uninject(injection);
-            return false;
-        });
-    }
-
-    removeByInjectedElement(to_uninject, dont_uninject) {
-        this.injections = this.injections.filter(injection => {
-            if (!injection.to_inject || injection.to_inject !== to_uninject)
-                return true;
-
-            if (!dont_uninject)
-                this.uninject(injection);
-            return false;
-        });
+            this.injections.splice(index, 1);
+        }
     }
 
     inject(injection) {

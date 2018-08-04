@@ -4,6 +4,7 @@
 
 const Element = require('./element');
 const ElementStore = require('./elements');
+const Injection = require('./injection');
 
 const ElementRecord = ElementStore.ElementRecord;
 
@@ -13,8 +14,6 @@ const watched_elements = Element.watched_elements;
 const observer = new MutationObserver(mutations => InjectorKit.mutationcallback(mutations));
 
 let started = false;
-
-// const added_nodes = [];
 
 class InjectorKit {
 
@@ -195,6 +194,7 @@ class InjectorKit {
 InjectorKit.instances = instances;
 InjectorKit.watched_elements = watched_elements;
 InjectorKit.ElementStore = ElementStore;
+InjectorKit.types = Injection.types;
 
 module.exports = InjectorKit;
 window.InjectorKit = InjectorKit;
