@@ -129,6 +129,10 @@ class InjectorKit {
             for (let node of mutation.addedNodes) {
                 InjectorKit.addedNode(node, mutation);
             }
+
+            for (let node of mutation.removedNodes) {
+                InjectorKit.removedNode(node, mutation);
+            }
         }
     }
 
@@ -136,6 +140,13 @@ class InjectorKit {
         const matches = this.getMatchingElements(node, mutation);
         for (let {element, node} of matches) {
             element.addedNode(node);
+        }
+    }
+
+    static removedNode(node, mutation) {
+        const matches = this.getMatchingElements(node, mutation);
+        for (let {element, node} of matches) {
+            element.removedNode(node);
         }
     }
 

@@ -135,8 +135,28 @@ class Element {
         return injection.inject();
     }
 
+    injectNode(node) {
+        for (let injection of this.injections) {
+            injection.injectNode(node);
+        }
+    }
+
+    addedNode(node) {
+        this.injectNode(node);
+    }
+
     uninject(injection) {
         return injection.uninject();
+    }
+
+    uninjectNode(node) {
+        for (let injection of this.injections) {
+            injection.uninjectNode(node);
+        }
+    }
+
+    removedNode(node) {
+        this.uninjectNode(node);
     }
 
     unload() {
