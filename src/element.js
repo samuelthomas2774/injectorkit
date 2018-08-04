@@ -148,45 +148,8 @@ class Element {
         return injection.inject();
     }
 
-    inject_at_before(injection, $element, $to_inject) {
-        console.log($to_inject, 'before', $element);
-        return $to_inject.insertBefore($element);
-    }
-
-    inject_at_after(injection, $element, $to_inject) {
-        return $to_inject.insertAfter($element);
-    }
-
-    inject_at_prepend(injection, $element, $to_inject) {
-        return $to_inject.prependTo($element);
-    }
-
-    inject_at_append(injection, $element, $to_inject) {
-        return $to_inject.appendTo($element);
-    }
-
-    inject_at_once(injection, $element, $to_inject) {
-        this.remove(injection.id, true);
-    }
-
     uninject(injection) {
         return injection.uninject();
-    }
-
-    uninject_at_before(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
-    }
-
-    uninject_at_after(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
-    }
-
-    uninject_at_prepend(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
-    }
-
-    uninject_at_append(injection, $element, $to_inject, $to_uninject) {
-        $to_uninject.detach();
     }
 
     unload() {
