@@ -1,7 +1,7 @@
 module.exports = (Plugin, Api, Vendor, Dependencies) => {
     const {CssUtils} = Api;
 
-    const DiscordInjectorKit = Dependencies.injectorkit;
+    const {default: DiscordInjectorKit} = Dependencies.injectorkit;
 
     const injectorkit = new DiscordInjectorKit('testplugin-3');
 
