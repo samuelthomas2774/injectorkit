@@ -2,9 +2,9 @@
  * InjectorKit for Discord
  */
 
-const InjectorKit = require('../');
+const {ElementStore} = require('..');
 
-class DiscordElements extends InjectorKit.ElementStore {
+class DiscordElements extends ElementStore {
 
     get app() { return '#app-mount'; }
 

@@ -1,6 +1,6 @@
 {
     "info": {
-        "name": "InjectorKit Test Plugin",
+        "name": "InjectorKit Test Plugin 3",
         "authors": [
             {
                 "name": "Samuel Elliott",
@@ -11,5 +11,8 @@
             }
         ],
         "version": 1
+    },
+    "dependencies": {
+        "injectorkit": "^2.0.0"
     }
 }
