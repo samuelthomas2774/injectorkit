@@ -1,7 +1,9 @@
-InjectorKit for Discord
+InjectorKit
 ===
 
-This is a library for building plugins for BetterDiscord. It finds elements of Discord's UI so if something changes only this library needs to be updated. It also automatically re-injects elements if needed.
+InjectorKit is a library for hooking into web applications. It stores elements' selectors so if something changes only the elements library needs to be updated. It also automatically re-injects elements if needed.
+
+InjectorKit was originally made for use by plugins for BetterDiscord, and comes with elements for Discord's UI by default.
 
 Usage
 ---
@@ -9,61 +11,112 @@ Usage
 The main function you'll use is the `InjectorKit.get` function. It returns an `Element` object, which contains functions to add content before, after or inside that element.
 
 ```js
+import InjectorKit from 'injectorkit';
+import DiscordElements from 'injectorkit/elements/discord';
+// or
 const InjectorKit = require('injectorkit');
-const injectorkit = new InjectorKit();
+const DiscordElements = require('injectorkit/elements/discord');
+
+const DiscordInjectorKit = InjectorKit.use(DiscordElements);
+const injectorkit = new DiscordInjectorKit();
 
 injectorkit.start();
 
 // Add a menu above the user details panel
-const $menu = $('<div></div>').addClass('injectorkit-test');
-const injection = injectorkit.get('user-details').before($menu);
+const menu = document.createElement('div');
+menu.classList.add('injectorkit-test');
+
+const injection = injectorkit.get('user-details').before(menu);
 
 ```
 
-### In a plugin
+### In a BetterDiscord plugin
 
-This library is built specifically for BetterDiscord plugins, and has some functions to make it's use easier in plugins. In most cases an InjectorKit instance should be created with an ID. If a new instance is created with the same ID, the old one will be automatically destroyed.
+For BetterDiscord v2, you can use InjectorKit as an external module. Just add `"injectorkit": "^2.0.0"` to the your plugin's dependencies.
+
+```json
+{
+    "...": "...",
+    "dependencies": {
+        "injectorkit": "^2.0.0"
+    }
+}
+
+```
 
 ```js
-onLoad() {
-    this.injectorkit = new InjectorKit('plugin-id');
-}
+export default (Plugin, PluginApi, Dependencies) => {
+    const DiscordInjectorKit = Dependencies.injectorkit.default;
 
-onStart() {
-    // The start function starts all injections
-    this.injectorkit.start();
-}
+    // ...
 
-onStop() {
-    // The stop function removes all injections
-    this.injectorkit.stop();
-}
+    return class MyPlugin extends Plugin {
+        onstart() {
+            if (!this.injectorkit) this.injectorkit = new InjectorKit(this.id);
+
+            this.injectorkit.start();
+        }
+
+        onstop() {
+            this.injectorkit.stop();
+        }
+
+        onunload() {
+            this.injectorkit.unload();
+        }
+
+        // ...
+    }
+};
 
 ```
 
 ### Using callbacks
 
-You can add callbacks to catch when exactly something is injected/removed. (Note: when an element of Discord's UI is itself removed there will be no callback.) You can in a callback change properties of each instance of the element to inject, or remove if needed. You can also create an injection with only a callback.
+You can add callbacks to catch when exactly something is injected/removed. (Note: when an element is itself removed there will be no callback.) You can in a callback change properties of each instance of the element to inject, or remove if needed. You can also create an injection with only a callback.
 
 ```js
-const $menu = $('<div></div>').addClass('injectorkit-test');
-injectorkit.get('channel-list-channels').prepend($menu, (injection, $element, $injected) => {
+const menu = document.createElement('div');
+menu.classList.add('injectorkit-test');
+
+injectorkit.get('channel-list-channels').prepend(menu, (injection, element, injected) => {
     // injection is the injection record (the same is returned by InjectorKit.prepend)
-    // $element is a jQuery object containing the element of Discord's UI
-    // $injected is a jQuery object containing the element that was injected
+    // element is the element
+    // injected is the element that was injected (a clone of menu)
     // This function will be called individually for each element that is injected (remember that injections are continuous - if any more channels are added to the list $menu will be prepended and this will be called again)
-    
-    console.log('Injected ', $injected);
-}, (injection, $element, $uninjected) {
+
+    console.log('Injected ', injected);
+}, (injection, element, uninjected) => {
     // Arguments are the same as above
-    
-    console.log('Removed ', $uninjected);
+
+    console.log('Removed ', uninjected);
 });
+
+```
+
+### Using Element.once
+
+You can use the `Element.once` function to wait for an element to be added to the DOM.
+
+```js
+injectorkit.get('preferences-sidebar').once((injection, element) => {
+    // injection is the injection record
+    // element is the element
+});
+
+```
+
+If you don't specify a callback, any matching element that is already in the DOM will be ignored and a promise will be returned.
+
+```js
+const element = await injectorkit.get('preferences-sidebar').once();
 
 ```
 
 Available elements
 ---
+
+### Discord
 
 Not that much *yet*.
 
@@ -88,16 +141,3 @@ modal-addserver-create | .modal-2LIEKY .create-guild-container > .create-guild |
 modal-addserver-join | .modal-2LIEKY .create-guild-container > .join-server |
 tooltips        | .tooltips                 |
 tooltip         | .tooltips > *             |
-
-InjectorKit only works with elements inside of the app element (`#app-mount`). If you want to inject CSS, use this:
-
-```js
-const $styles = $('<style></style>').text(your_css);
-
-// On plugin start
-$styles.appendTo('head');
-
-// On plugin stop
-$styles.detach();
-
-```

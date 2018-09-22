@@ -1,7 +1,7 @@
 /**
- * InjectorKit for Discord
+ * InjectorKit
  *
- * This file contains a list of elements in Discord's UI.
+ * This is the base ElementStore that all element stores should extend.
  */
 
 export class ElementRecord {

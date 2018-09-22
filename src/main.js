@@ -1,15 +1,12 @@
 /**
- * InjectorKit for Discord
+ * InjectorKit
  */
 
-import Element from './element';
-import ElementStore from './elements';
+import Element, {watched_elements} from './element';
+import ElementStore, {ElementRecord} from './elements';
 import Injection from './injection';
 
-const ElementRecord = ElementStore.ElementRecord;
-
 const instances = {};
-const watched_elements = Element.watched_elements;
 
 const observer = new MutationObserver(mutations => InjectorKit.mutationcallback(mutations));
 
@@ -49,6 +46,9 @@ class InjectorKit {
         };
     }
 
+    /**
+     * Enable all this instance's injections.
+     */
     start() {
         this.started = true;
         for (let element of this.element_instances.values()) {
@@ -56,6 +56,9 @@ class InjectorKit {
         }
     }
 
+    /**
+     * Disable all this instance's injections.
+     */
     stop() {
         this.started = false;
         for (let element of this.element_instances.values()) {
@@ -63,12 +66,21 @@ class InjectorKit {
         }
     }
 
+    /**
+     * Refresh all this instance's injections.
+     */
     refresh() {
         for (let element of this.element_instances.values()) {
             element.refresh();
         }
     }
 
+    /**
+     * Returns an Element.
+     *
+     * @param {string} element_name
+     * @return {Element}
+     */
     get(element_name) {
         const element_record = element_name instanceof ElementRecord ? element_name :
             this.constructor.getElementRecord(element_name);
@@ -85,16 +97,16 @@ class InjectorKit {
         return element;
     }
 
+    /**
+     * This function unbinds everything.
+     * Useful if a plugin is reloaded.
+     * This shouldn't be used to stop a plugin.
+     * See {@link InjectorKit.stop} for that.
+     */
     unload() {
-        // This function unbinds everything
-        // Useful if a plugin is reloaded
-        // This shouldn't be used to stop a plugin
-        // See InjectorKit.stop for that
-
         for (let [name, element] of this.element_instances) {
             element.unload();
-            delete this.element_instances[name];
-            this.element_instances.delete(this.element_instances);
+            this.element_instances.delete(name);
         }
 
         delete instances[this.id];
@@ -206,10 +218,15 @@ class InjectorKit {
         // If we get here then the element doesn't exist
         throw new Error(`Unknown element ${element_name}`);
     }
+
+    static get instances() {
+        return instances;
+    }
+
+    static get types() {
+        return Injection.types;
+    }
 }
 
-InjectorKit.instances = instances;
-InjectorKit.ElementStore = ElementStore;
-InjectorKit.types = Injection.types;
-
 export default InjectorKit;
+export {ElementStore};

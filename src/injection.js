@@ -78,6 +78,15 @@ class Injection {
         return this.constructor.inject_at(this, node, this.to_inject);
     }
 
+    /**
+     * Called to apply this injection to a new element.
+     * Should be overridden by child classes.
+     *
+     * @param {Injection} injection
+     * @param {HTMLElement} node
+     * @param {*} to_inject
+     * @return {*} injected A value to pass to {@link Injection.uninject_at} to remove the injection
+     */
     static inject_at(injection, node, to_inject) {
         if (!this['inject_at_' + injection.type]) return;
         return this['inject_at_' + injection.type](injection, node, to_inject);
@@ -85,6 +94,21 @@ class Injection {
 
     uninject_at(node, injected) {
         return this.constructor.uninject_at(this, node, this.to_inject, injected);
+    }
+
+    /**
+     * Called to apply this injection to a new element.
+     * Should be overridden by child classes.
+     *
+     * @param {Injection} injection
+     * @param {HTMLElement} node
+     * @param {*} to_inject
+     * @param {*} injected
+     * @return {*}
+     */
+    static uninject_at(injection, node, to_inject, injected) {
+        if (!this['uninject_at_' + injection.type]) return;
+        return this['uninject_at_' + injection.type](injection, node, to_inject, injected);
     }
 
     static createInjection(element, injection, type) {

@@ -1,10 +1,10 @@
 /**
- * InjectorKit for Discord
+ * InjectorKit
  */
 
 import Injection from './injection';
 
-const watched_elements = new Map();
+export const watched_elements = new Map();
 
 export default class Element {
     constructor(injectorkit, element) {
@@ -56,10 +56,28 @@ export default class Element {
         }
     }
 
-    add(injection) {
-        return Injection.createInjection(this, injection, injection.type);
+    /**
+     * Creates a new injection.
+     *
+     * @param {Object} data
+     * @param {String} data.type The type of injection
+     * @param {HTMLElement} data.to_inject
+     * @param {Function} data.inject_callback
+     * @param {Function} data.uninject_callback
+     * @return {Injection}
+     */
+    add(data) {
+        return Injection.createInjection(this, data, data.type);
     }
 
+    /**
+     * Creates a new injection of type "before".
+     *
+     * @param {HTMLElement} to_inject
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @return {Injection}
+     */
     before(to_inject, inject_callback, uninject_callback) {
         return this.add({
             type: 'before',
@@ -69,6 +87,14 @@ export default class Element {
         });
     }
 
+    /**
+     * Creates a new injection of type "after".
+     *
+     * @param {HTMLElement} to_inject
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @return {Injection}
+     */
     after(to_inject, inject_callback, uninject_callback) {
         return this.add({
             type: 'after',
@@ -78,6 +104,14 @@ export default class Element {
         });
     }
 
+    /**
+     * Creates a new injection of type "prepend".
+     *
+     * @param {HTMLElement} to_inject
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @return {Injection}
+     */
     prepend(to_inject, inject_callback, uninject_callback) {
         return this.add({
             type: 'prepend',
@@ -87,6 +121,14 @@ export default class Element {
         });
     }
 
+    /**
+     * Creates a new injection of type "append".
+     *
+     * @param {HTMLElement} to_inject
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @return {Injection}
+     */
     append(to_inject, inject_callback, uninject_callback) {
         return this.add({
             type: 'append',
@@ -96,6 +138,13 @@ export default class Element {
         });
     }
 
+    /**
+     * Creates a new injection of type "callback".
+     *
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @return {Injection}
+     */
     callback(inject_callback, uninject_callback) {
         return this.add({
             type: 'callback',
@@ -105,6 +154,14 @@ export default class Element {
         });
     }
 
+    /**
+     * Creates a new injection of type "once".
+     *
+     * @param {Function} inject_callback
+     * @param {Function} uninject_callback
+     * @param {boolean} ignore_current_elements
+     * @return {(Injection|Promise)}
+     */
     once(inject_callback, uninject_callback, ignore_current_elements) {
         if (!inject_callback) {
             return new Promise((resolve, reject) => {
@@ -123,6 +180,12 @@ export default class Element {
         });
     }
 
+    /**
+     * Removes an injection.
+     *
+     * @param {(Injection|number)} injection
+     * @param {boolean} dont_uninject
+     */
     remove(injection, dont_uninject) {
         let index;
         while ((index = this.injections.findIndex(i => i.id === injection || i === injection)) > -1) {
@@ -166,9 +229,5 @@ export default class Element {
 
     get nodes() {
         return this.element.nodes;
-    }
-
-    static get watched_elements() {
-        return watched_elements;
     }
 }
