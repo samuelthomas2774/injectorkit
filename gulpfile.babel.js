@@ -21,6 +21,7 @@ gulp.task('build-bdv2-extmodule', function () {
         gulp.src('src/**/*.js', {base: '.'}),
         babel(),
         rename(path => path.dirname = 'dist' + path.dirname.substr(3)),
+        gulp.src('elements/discord.js', {base: '.'}),
         gulp.src('config.json'),
         gulp.src('package.json'),
         gulp.src('README.md'),
