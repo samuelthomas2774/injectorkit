@@ -1,0 +1,16 @@
+{
+    "info": {
+        "name": "InjectorKit",
+        "authors": [
+            {
+                "name": "Samuel Elliott",
+                "url": "https://samuelelliott.ml",
+                "discord_id": "284056145272766465",
+                "github_username": "samuelthomas2774",
+                "twitter_username": "_samuelelliott"
+            }
+        ],
+        "version": "2.0.0"
+    },
+    "main": "dist/bdv2-module.js"
+}

@@ -1,6 +1,8 @@
 import gulp from 'gulp';
 import pump from 'pump';
 import babel from 'gulp-babel';
+import archiver from 'gulp-archiver';
+import rename from 'gulp-rename';
 
 gulp.task('build', function () {
     return pump([
@@ -13,3 +15,17 @@ gulp.task('build', function () {
 gulp.task('watch', gulp.series('build', function () {
     return gulp.watch('src/**/*.js', gulp.series('build'));
 }));
+
+gulp.task('build-bdv2-extmodule', function () {
+    return pump([
+        gulp.src('src/**/*.js', {base: '.'}),
+        babel(),
+        // rename({dirname: 'dist'}),
+        rename(path => path.dirname = 'dist' + path.dirname.substr(3)),
+        gulp.src('config.json'),
+        gulp.src('package.json'),
+        gulp.src('README.md'),
+        archiver('bdv2-extmodule.zip'),
+        gulp.dest('.')
+    ]);
+});
