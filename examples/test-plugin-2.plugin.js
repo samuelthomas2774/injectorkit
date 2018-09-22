@@ -1,8 +1,11 @@
 //META{"name":"TestPlugin2"}*//
 
+/* eslint spaced-comment: "off" */
+
 // Assuming the InjectorKit repo is in this directory
 const {default: InjectorKit} = require('../../injectorkit');
 
+// eslint-disable-next-line no-unused-vars
 class TestPlugin2 {
     getName() {
         return 'Test Plugin 2';

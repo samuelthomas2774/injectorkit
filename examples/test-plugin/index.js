@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: "off" */
+
 module.exports = (Plugin, Api, Vendor) => {
     const {default: InjectorKit} = require('../..');
     const ElementStore = require('../../elements/discord');

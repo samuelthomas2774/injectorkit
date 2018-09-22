@@ -32,6 +32,6 @@
     },
     "scripts": {
         "build": "gulp build",
-        "lint": "eslint src"
+        "lint": "eslint src elements examples"
     }
 }

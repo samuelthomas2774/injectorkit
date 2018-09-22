@@ -2,10 +2,11 @@
  * InjectorKit for Discord
  */
 
+/* eslint brace-style: "off", block-spacing: "off" */
+
 const {ElementStore} = require('..');
 
 class DiscordElements extends ElementStore {
-
     get app() { return '#app-mount'; }
 
     get server_list() { return '.guilds-wrapper'; }
@@ -15,7 +16,7 @@ class DiscordElements extends ElementStore {
     get search_bar() { return '.da-search'; }
 
     get channel_list_channel() {
-        var selector = '';
+        let selector = '';
         selector += '.channels-3g2vYe .containerDefault-7RImuF,';
         selector += '.channels-3g2vYe .containerDragAfter-3rB7mB,';
         selector += '.channels-3g2vYe .containerDragBefore-12YyA9,';
@@ -41,7 +42,6 @@ class DiscordElements extends ElementStore {
 
     get tooltips() { return '.tooltips'; }
     get tooltip() { return '.tooltips > *'; }
-
 }
 
 module.exports = new DiscordElements();

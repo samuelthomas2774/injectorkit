@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: "off" */
+
 module.exports = (Plugin, Api, Vendor, Dependencies) => {
     const {CssUtils} = Api;
 
