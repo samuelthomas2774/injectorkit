@@ -2,10 +2,9 @@
  * InjectorKit
  */
 
-const Injection = require('../injection');
+import Injection from '../injection';
 
-class OnceInjection extends Injection {
-
+export default class OnceInjection extends Injection {
     static inject_at(injection, node, to_inject) {
         this.element.remove(injection, true);
     }
@@ -13,7 +12,4 @@ class OnceInjection extends Injection {
     // static uninject_at(injection, element, to_inject, injected) {
     //     injected.parentNode.removeChild(injected);
     // }
-
 }
-
-module.exports = OnceInjection;

@@ -5,7 +5,6 @@
 const node_injection_map = new WeakMap();
 
 class Injection {
-
     constructor(element, data) {
         Object.assign(this, data);
         this.element = element;
@@ -19,8 +18,9 @@ class Injection {
 
         this.element.injections.push(this);
 
-        if (this.element.started && !this.ignore_current_elements)
+        if (this.element.started && !this.ignore_current_elements) {
             this.inject();
+        }
     }
 
     inject() {
@@ -92,15 +92,24 @@ class Injection {
         if (!InjectionType) throw new Error(`Unknown injection type ${type || injection.type}`);
         return new InjectionType(element, injection);
     }
-
 }
 
 Injection.types = new class {
-    get before() { return require('./injection-types/before'); }
-    get after() { return require('./injection-types/after'); }
-    get prepend() { return require('./injection-types/prepend'); }
-    get append() { return require('./injection-types/append'); }
-    get once() { return require('./injection-types/once'); }
+    get before() {
+        return require('./injection-types/before').default;
+    }
+    get after() {
+        return require('./injection-types/after').default;
+    }
+    get prepend() {
+        return require('./injection-types/prepend').default;
+    }
+    get append() {
+        return require('./injection-types/append').default;
+    }
+    get once() {
+        return require('./injection-types/once').default;
+    }
 };
 
-module.exports = Injection;
+export default Injection;

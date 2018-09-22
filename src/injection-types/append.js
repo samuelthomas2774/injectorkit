@@ -2,10 +2,9 @@
  * InjectorKit
  */
 
-const Injection = require('../injection');
+import Injection from '../injection';
 
-class AppendInjection extends Injection {
-
+export default class AppendInjection extends Injection {
     static inject_at(injection, node, to_inject) {
         const clone = to_inject.cloneNode(true);
 
@@ -19,7 +18,4 @@ class AppendInjection extends Injection {
     static uninject_at(injection, element, to_inject, injected) {
         injected.parentNode.removeChild(injected);
     }
-
 }
-
-module.exports = AppendInjection;

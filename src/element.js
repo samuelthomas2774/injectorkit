@@ -2,12 +2,11 @@
  * InjectorKit for Discord
  */
 
-const Injection = require('./injection');
+import Injection from './injection';
 
 const watched_elements = new Map();
 
-class Element {
-
+export default class Element {
     constructor(injectorkit, element) {
         this.injectorkit = injectorkit;
         this.element = element;
@@ -20,8 +19,9 @@ class Element {
     start() {
         this.started = true;
 
-        if (!watched_elements.has(this.element))
+        if (!watched_elements.has(this.element)) {
             watched_elements.set(this.element, new Set());
+        }
 
         watched_elements.get(this.element).add(this);
 
@@ -37,8 +37,9 @@ class Element {
         const elements = watched_elements.get(this.element);
         elements.delete(this);
 
-        if (!elements.size)
+        if (!elements.size) {
             elements.delete(this.element);
+        }
 
         for (let injection of this.injections) {
             if (!injection.started) return;
@@ -64,7 +65,7 @@ class Element {
             type: 'before',
             to_inject,
             inject_callback,
-            uninject_callback
+            uninject_callback,
         });
     }
 
@@ -73,7 +74,7 @@ class Element {
             type: 'after',
             to_inject,
             inject_callback,
-            uninject_callback
+            uninject_callback,
         });
     }
 
@@ -82,7 +83,7 @@ class Element {
             type: 'prepend',
             to_inject,
             inject_callback,
-            uninject_callback
+            uninject_callback,
         });
     }
 
@@ -91,7 +92,7 @@ class Element {
             type: 'append',
             to_inject,
             inject_callback,
-            uninject_callback
+            uninject_callback,
         });
     }
 
@@ -100,32 +101,32 @@ class Element {
             type: 'callback',
             to_inject: null,
             inject_callback,
-            uninject_callback
+            uninject_callback,
         });
     }
 
     once(inject_callback, uninject_callback, ignore_current_elements) {
-		if (!inject_callback) {
-			return new Promise((resolve, reject) => {
-				this.once((injection, element) => {
-					resolve(element);
-				}, null, typeof ignore_current_elements === 'boolean' ? ignore_current_elements : true);
-			});
-		}
+        if (!inject_callback) {
+            return new Promise((resolve, reject) => {
+                this.once((injection, element) => {
+                    resolve(element);
+                }, null, typeof ignore_current_elements === 'boolean' ? ignore_current_elements : true);
+            });
+        }
 
         return this.add({
             type: 'once',
             to_inject: null,
             inject_callback,
             uninject_callback,
-			ignore_current_elements
+            ignore_current_elements,
         });
     }
 
-    remove(injection_id, dont_uninject) {
+    remove(injection, dont_uninject) {
         let index;
-        while ((index = this.injections.findIndex(injection => injection.id === injection_id || injection === injection_id)) > -1) {
-            if (!dont_uninject) this.uninject(injection);
+        while ((index = this.injections.findIndex(i => i.id === injection || i === injection)) > -1) {
+            if (!dont_uninject) this.uninject(this.injections[index]);
 
             this.injections.splice(index, 1);
         }
@@ -167,8 +168,7 @@ class Element {
         return this.element.nodes;
     }
 
+    static get watched_elements() {
+        return watched_elements;
+    }
 }
-
-Element.watched_elements = watched_elements;
-
-module.exports = Element;

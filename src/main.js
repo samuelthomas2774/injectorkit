@@ -2,9 +2,9 @@
  * InjectorKit for Discord
  */
 
-const Element = require('./element');
-const ElementStore = require('./elements');
-const Injection = require('./injection');
+import Element from './element';
+import ElementStore from './elements';
+import Injection from './injection';
 
 const ElementRecord = ElementStore.ElementRecord;
 
@@ -16,10 +16,10 @@ const observer = new MutationObserver(mutations => InjectorKit.mutationcallback(
 let started = false;
 
 class InjectorKit {
-
     constructor(id) {
-        if (id && instances[id])
+        if (id && instances[id]) {
             instances[id].unload();
+        }
 
         // Generate a new ID for this instance
         // This will be added to all injected elements
@@ -40,36 +40,42 @@ class InjectorKit {
         const ParentInjectorKit = this;
 
         return class extends ParentInjectorKit {
-            static get parent() { return ParentInjectorKit; }
-            static get element_stores() { return element_stores; }
-        }
+            static get parent() {
+                return ParentInjectorKit;
+            }
+            static get element_stores() {
+                return element_stores;
+            }
+        };
     }
 
     start() {
         this.started = true;
-        for (let [element_record, element] of this.element_instances) {
+        for (let element of this.element_instances.values()) {
             element.start();
         }
     }
 
     stop() {
         this.started = false;
-        for (let [name, element] of this.element_instances) {
+        for (let element of this.element_instances.values()) {
             element.stop();
         }
     }
 
     refresh() {
-        for (let [name, element] of this.element_instances) {
+        for (let element of this.element_instances.values()) {
             element.refresh();
         }
     }
 
     get(element_name) {
-        const element_record = element_name instanceof ElementRecord ? element_name : this.constructor.getElementRecord(element_name);
+        const element_record = element_name instanceof ElementRecord ? element_name :
+            this.constructor.getElementRecord(element_name);
 
-        if (this.element_instances.has(element_record))
+        if (this.element_instances.has(element_record)) {
             return this.element_instances.get(element_record);
+        }
 
         const element = new Element(this, element_record);
         this.element_instances.set(element_record, element);
@@ -102,7 +108,7 @@ class InjectorKit {
 
         observer.observe(document.documentElement, {
             childList: true,
-            subtree: true
+            subtree: true,
         });
     }
 
@@ -153,8 +159,7 @@ class InjectorKit {
     static getMatchingElements(node, mutation) {
         const matches = [];
 
-        if (node.nodeType !== 1)
-            return matches;
+        if (node.nodeType !== 1) return matches;
 
         for (let [element_record, elements] of watched_elements) {
             if (elements.length <= 0) return matches;
@@ -167,9 +172,11 @@ class InjectorKit {
                     matches.push({
                         exact: true,
                         element,
-                        node
+                        node,
                     });
                 }
+
+                // eslint-disable-next-line curly
             } else for (let matched_node of node.querySelectorAll(element_record.selector)) {
                 console.log('child', matched_node, 'matches selector', element_record.selector);
 
@@ -178,7 +185,7 @@ class InjectorKit {
                     matches.push({
                         exact: false,
                         element,
-                        node: matched_node
+                        node: matched_node,
                     });
                 }
             }
@@ -199,13 +206,10 @@ class InjectorKit {
         // If we get here then the element doesn't exist
         throw new Error(`Unknown element ${element_name}`);
     }
-
 }
 
 InjectorKit.instances = instances;
-InjectorKit.watched_elements = watched_elements;
 InjectorKit.ElementStore = ElementStore;
 InjectorKit.types = Injection.types;
 
-module.exports = InjectorKit;
-window.InjectorKit = InjectorKit;
+export default InjectorKit;

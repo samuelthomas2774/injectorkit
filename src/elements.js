@@ -4,8 +4,7 @@
  * This file contains a list of elements in Discord's UI.
  */
 
-class ElementRecord {
-
+export class ElementRecord {
     constructor(name, selector) {
         this.name = name;
         this.selector = selector;
@@ -18,11 +17,9 @@ class ElementRecord {
     get nodes() {
         return document.querySelectorAll(this.selector);
     }
-
 }
 
-class ElementStore {
-
+export default class ElementStore {
     get(element_name) {
         element_name = element_name.replace(/-/g, '_');
 
@@ -32,10 +29,11 @@ class ElementStore {
         if (element_selector instanceof ElementRecord) return element_selector;
 
         const element = new ElementRecord(element_name, element_selector);
+        delete this[element_name];
 
         Object.defineProperty(this, element_name, {
             value: element,
-            configurable: true
+            configurable: true,
         });
 
         return element;
@@ -46,8 +44,7 @@ class ElementStore {
         return !!this[element_name];
     }
 
+    static get ElementRecord() {
+        return ElementRecord;
+    }
 }
-
-ElementStore.ElementRecord = ElementRecord;
-
-module.exports = ElementStore;
