@@ -1,6 +1,6 @@
 {
     "info": {
-        "name": "InjectorKit Test Plugin",
+        "name": "InjectorKit",
         "authors": [
             {
                 "name": "Samuel Elliott",
@@ -10,6 +10,7 @@
                 "twitter_username": "_samuelelliott"
             }
         ],
-        "version": 1
-    }
+        "version": "2.0.0"
+    },
+    "main": "dist/bdv2-module.js"
 }

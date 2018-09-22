@@ -1,74 +1,50 @@
 /**
- * InjectorKit for Discord
+ * InjectorKit
  *
- * This file contains a list of elements in Discord's UI.
+ * This is the base ElementStore that all element stores should extend.
  */
 
-const $ = require('jquery');
-
-class ElementRecord {
-
-    constructor(selector) {
+export class ElementRecord {
+    constructor(name, selector) {
+        this.name = name;
         this.selector = selector;
     }
 
-    get jQuery() {
-        return $(this.selector);
-    }
-
     get firstNode() {
-        return this.jQuery[0];
+        return document.querySelector(this.selector);
     }
 
+    get nodes() {
+        return document.querySelectorAll(this.selector);
+    }
 }
 
-class Elements {
-
+export default class ElementStore {
     get(element_name) {
         element_name = element_name.replace(/-/g, '_');
-        return new ElementRecord(this[element_name]);
+
+        const element_selector = this[element_name];
+
+        if (!element_selector) throw new Error(`Unknown element ${element_name}`);
+        if (element_selector instanceof ElementRecord) return element_selector;
+
+        const element = new ElementRecord(element_name, element_selector);
+        delete this[element_name];
+
+        Object.defineProperty(this, element_name, {
+            value: element,
+            configurable: true,
+        });
+
+        return element;
     }
 
-    get app() {
-        // This *must not* be changed live
-        // It's what InjectorKit uses to watch for changes
-        return '#app-mount';
+    has(element_name) {
+        element_name = element_name.replace(/-/g, '_');
+        return !!this[element_name];
     }
 
-    get server_list() { return '.guilds-wrapper'; }
-
-    get user_details() { return '.container-iksrDt'; }
-
-    get search_bar() { return '.search-2--6aU'; }
-
-    get channel_list_channel() {
-        var selector = '';
-        selector += '.channels-3g2vYe .containerDefault-7RImuF,';
-        selector += '.channels-3g2vYe .containerDragAfter-3rB7mB,';
-        selector += '.channels-3g2vYe .containerDragBefore-12YyA9,';
-        selector += '.channels-3g2vYe .containerUserOver-2YhVL6';
-        return selector;
+    static get ElementRecord() {
+        return ElementRecord;
     }
-
-    get messages() { return '.messages-wrap'; }
-    get message() { return '.message-group'; }
-
-    get member_list() { return '.channel-members-wrap'; }
-    get member_list_member() { return '.channel-members-wrap .member'; }
-
-    get preferences() { return '.layer-kosS71'; }
-    get preferences_sidebar() { return '.layer-kosS71 .side-2nYO0F'; }
-
-    get modal() { return '.modal-2LIEKY'; }
-    get modal_help() { return '.modal-2LIEKY .need-help-modal'; }
-    get modal_addserver() { return '.modal-2LIEKY .create-guild-container'; }
-    get modal_addserver_createjoin() { return '.modal-2LIEKY .create-guild-container > .create-or-join'; }
-    get modal_addserver_create() { return '.modal-2LIEKY .create-guild-container > .create-guild'; }
-    get modal_addserver_join() { return '.modal-2LIEKY .create-guild-container > .join-server'; }
-
-    get tooltips() { return '.tooltips'; }
-    get tooltip() { return '.tooltips > *'; }
-
 }
-
-module.exports = new Elements();
